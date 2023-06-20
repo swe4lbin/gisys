@@ -1,7 +1,10 @@
-﻿namespace Arbetsprov_Bonus.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace Arbetsprov_Bonus.Entities;
 
 public class Consultant
 {
+    [JsonConstructor]
     public Consultant(string firstName, string lastName, DateTime startDate)
     {
         FirstName = firstName;

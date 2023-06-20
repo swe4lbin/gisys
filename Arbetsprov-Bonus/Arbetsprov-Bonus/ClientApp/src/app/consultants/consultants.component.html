@@ -1,0 +1,52 @@
+<h1 id="tableLabel">Konsulter</h1>
+
+<div class="container">
+  <div class="row">
+    <div class="col text-end">
+      <button class="btn-primary btn-sm" (click)="newRow()">Ny konsult</button>
+    </div>
+  </div>
+</div>
+
+<p *ngIf="!consultants"><em>Loading...</em></p>
+
+<table id="consultants" class='table table-striped' aria-labelledby="tableLabel" *ngIf="consultants">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Namn</th>
+      <th>Anställningsdatum</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let consultant of consultants; let i = index;">
+      <td>
+        <span *ngIf="consultant.id">{{ consultant.id }}</span>
+      </td>
+
+      <td *ngIf="chosenEditRow != i">{{ consultant.firstName }} {{ consultant.lastName }}</td>
+      <td *ngIf="chosenEditRow == i && consultantToEdit">
+        <input type="text" [(ngModel)]="consultantToEdit.firstName" placeholder="Förnamn" size="12">
+        <input type="text" [(ngModel)]="consultantToEdit.lastName" placeholder="Efternamn" size="12">
+      </td>
+
+      <td *ngIf="chosenEditRow != i">{{ dateFormatService.formatDate(consultant?.startDate) }}</td>
+      <td *ngIf="chosenEditRow == i">
+        <input type="date" id="start" name="start-date"
+               [value]="dateFormatService.formatDate(consultant?.startDate)">
+      </td>
+
+      <td *ngIf="chosenEditRow != i">
+        <button class="btn-primary btn-sm" (click)="editRow(i)">Redigera</button>
+        <button class="btn-danger btn-sm" (click)="deleteRow(i)">Ta bort</button>
+      </td>
+      <td *ngIf="chosenEditRow == i">
+        <button class="btn-warning btn-sm" (click)="stopEditing()">Avbryt</button>
+        <button class="btn-primary btn-sm" (click)="saveRowData(!consultant.id ? true : false)">Spara</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="isLoading" class="loader-line"></div>

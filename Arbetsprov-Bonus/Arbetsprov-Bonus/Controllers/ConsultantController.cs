@@ -1,10 +1,11 @@
 ﻿using Arbetsprov_Bonus.Data;
 using Arbetsprov_Bonus.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
 
 namespace Arbetsprov_Bonus.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -28,18 +29,23 @@ public class ConsultantController : ControllerBase
     //    throw new NotImplementedException();
     //}
 
-    //public Consultant Add(string consultant)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpPost]
+    public Consultant Add([FromBody]Consultant consultant)
+    {
+        return _consultantRepository.Add(consultant);
+        //throw new NotImplementedException();
+    }
 
-    //public Consultant Remove()
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpDelete("{id}")]
+    public bool Remove([FromRoute] int id)
+    {
+        return _consultantRepository.Remove(id);
+        //throw new NotImplementedException();
+    }
 
-    //public Consultant Update(bool yes)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpPut("{id}")]
+    public bool Update([FromRoute] int id, [FromBody]Consultant consultant)
+    {
+        return _consultantRepository.Update(id, consultant);
+    }
 }

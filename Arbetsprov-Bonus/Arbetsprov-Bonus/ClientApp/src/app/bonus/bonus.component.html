@@ -1,0 +1,128 @@
+<div class="container" *ngIf="!chosenBonusPeriod">
+  <div class="row">
+    <h1 id="tableLabel">Bonusberäkningar</h1>
+  </div>
+  <div class="row" *ngIf="bonusPeriods?.length && bonusPeriods!.length > 0">
+    <div class="col text-end">
+      <button class="btn-primary btn-sm" (click)="newBonusPeriod()">Ny period</button>
+    </div>
+  </div>
+  <div class="row" *ngIf="bonusPeriods?.length && bonusPeriods!.length > 0">
+    <div class="col">
+      <table id="consultants" class='table table-striped' aria-labelledby="tableLabel" *ngIf="consultants">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Månad</th>
+            <th>Nettoresultat</th>
+            <th>Bonusunderlag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let period of bonusPeriods; let i = index;">
+            <td>
+              <span class="status-draft" *ngIf="period.status == 'draft'">Utkast</span>
+              <span  class="status-done" *ngIf="period.status == 'completed'">Genomförd</span>
+            </td>
+
+            <td>{{ dateFormatService.formatDate(period?.startDate) }}</td>
+
+            <td>
+              {{ period.netProfit }}
+            </td>
+
+            <td>
+              <button class="btn-primary btn-sm" (click)="selectBonusPeriod(period.id)">Visa</button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" *ngIf="!bonusPeriods || bonusPeriods.length == 0">
+    <div class="col">
+      Det finns inga bonusberäkningar. Tryck på 'Ny period' för att skapa en ny beräkning
+    </div>
+    <div class="col text-end">
+      <button class="btn-primary btn-sm" (click)="newBonusPeriod()">Ny period</button>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="chosenBonusPeriod">
+  <div class="row">
+    <div class="col">
+      <button class="btn-secondary btn-sm" (click)="selectBonusPeriod(0)">Gå tillbaka</button>
+    </div>
+    <div class="col text-end">
+      <button class="btn-danger btn-sm" (click)="deleteBonusPeriod()" *ngIf="chosenBonusPeriod.bonusPeriod.status == 'new' || chosenBonusPeriod.bonusPeriod.status == 'draft'">Ta bort underlag</button>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col">
+      <span *ngIf="chosenBonusPeriod?.bonusPeriod?.startDate">
+        <h4>Månad</h4>
+        <h4>{{ dateFormatService.formatDate(chosenBonusPeriod?.bonusPeriod?.startDate) }}</h4>
+      </span>
+      <span *ngIf="!chosenBonusPeriod.bonusPeriod.startDate">
+        <h4>Välj månad</h4><input type="month" id="start" name="start" [value]="dateFormatService.formatMonth(chosenBonusPeriod?.bonusPeriod?.startDate)">
+      </span>
+    </div>
+    <div class="col">
+      <h4>Bolaget nettoresultat</h4>
+      <span *ngIf="chosenBonusPeriod.bonusPeriod.status != 'completed'">
+        <input type="text" [(ngModel)]="chosenBonusPeriod.bonusPeriod.netProfit" placeholder="Nettoresultat" size="8"> kr
+      </span>
+      <span *ngIf="chosenBonusPeriod.bonusPeriod.status == 'completed'">
+        <h4>{{ chosenBonusPeriod.bonusPeriod.netProfit
+        }} kr</h4>
+      </span>
+    </div>
+  </div>
+  <div class="row mt-2" style="max-height: calc(100vh - 120px)">
+    <div class="col">
+      <table id="consultants" class='table table-striped' aria-labelledby="tableLabel" *ngIf="consultants">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Namn</th>
+            <th>Debiterade timmar</th>
+            <th>Bonus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of chosenBonusPeriod.consultantsAndCalculations; let i = index;">
+            <td>
+              <span>{{ item.consultant.id }}</span>
+            </td>
+
+            <td>{{ item.consultant.firstName }} {{ item.consultant.lastName }}</td>
+
+            <td *ngIf="chosenBonusPeriod.bonusPeriod.status != 'completed'">
+              <input type="text" [(ngModel)]="item.billedHours" placeholder="Debiterade timmar" size="8">
+            </td>
+            <td *ngIf="chosenBonusPeriod.bonusPeriod.status == 'completed'">
+              {{ item.billedHours }}
+            </td>
+
+            <td>
+              {{ item.bonus }}
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col text-end">
+      <button class="btn-primary btn-sm" (click)="calculateAndSaveBonuses(chosenBonusPeriod.bonusPeriod.status)" *ngIf="chosenBonusPeriod.bonusPeriod.status == 'new' || chosenBonusPeriod.bonusPeriod.status == 'draft'">Räkna bonusar</button>
+      <div class="mt-2">
+        <button class="btn-success btn-sm" (click)="calculateAndSaveBonuses('completed')" *ngIf="chosenBonusPeriod.bonusPeriod.status == 'draft'">Spara underlag</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="loader-line"></div>
